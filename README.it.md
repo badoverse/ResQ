@@ -18,8 +18,12 @@ ResQ **non è un modello addestrato apposta.** Usa modelli aperti di uso general
 
 - presentarsi come ResQ;
 - rispondere nella lingua dell'utente, in modo breve e pratico;
+- **aiutare sempre** a proteggersi, prepararsi, sopravvivere e soccorrere, con istruzioni concrete e numerate, perché chi scrive potrebbe non avere nessun altro;
+- rifiutare solo le richieste di fare del male, come costruire armi o esplosivi;
 - dire "non sono sicuro" invece di inventare;
-- per emergenze mediche o pericoli immediati, dire sempre di chiamare il 112 e seguire la Protezione Civile.
+- consigliare il 112 e la Protezione Civile *in aggiunta* alle proprie istruzioni, mai al loro posto.
+
+Le istruzioni contengono un breve **prontuario di emergenza** basato sulle indicazioni standard di protezione civile e primo soccorso. Copre bombardamenti ed esplosioni, allarmi nucleari e chimici, terremoti, alluvioni, incendi, emorragie, massaggio cardiaco, ustioni, soffocamento e la vita senza corrente o acqua.
 
 Quello che i modelli sanno viene dal loro addestramento generale. **Non hanno un addestramento specifico su emergenze, primo soccorso o soccorso.** Non conoscono le notizie recenti e non possono cercare su internet. Per questo ResQ affianca all'AI delle **fonti verificate**:
 
@@ -29,27 +33,34 @@ Quello che i modelli sanno viene dal loro addestramento generale. **Non hanno un
 
 Usa l'AI per farti spiegare, riassumere, tradurre o trovare informazioni. Le cose importanti controllale nella biblioteca e nelle guide.
 
+## Schede di emergenza
+
+Nella pagina della chat ci sono **schede fisse, non generate dall'AI**, che si aprono con un clic: emorragia, non respira (massaggio cardiaco), svenuto ma respira, soffocamento, ustione, bombardamento, terremoto, incendio, alluvione, allarme nucleare o chimico. Sono sempre uguali e funzionano anche se l'AI è lenta o non parte.
+
 ## Modelli
 
 | Modello ResQ | Basato su | Dimensione | RAM | Va bene per |
 |---|---|---|---|---|
-| `resq:1.5b` | Qwen 2.5 1.5B | 1 GB | 4 GB+ | Computer vecchi o lenti, risposte rapide |
-| `resq:3b` (predefinito) | Qwen 2.5 3B | 1.9 GB | 6 GB+ | Uso di tutti i giorni |
-| `resq-think:1.5b` | DeepSeek-R1 1.5B | 1.1 GB | 4 GB+ | Piccoli ragionamenti passo passo |
+| `resq:1.5b` | Qwen 2.5 1.5B | 1 GB | 4 GB+ | Computer vecchi o lenti, domande semplici. **Non per le emergenze.** |
+| `resq:3b` (predefinito) | Qwen 2.5 3B | 1.9 GB | 6 GB+ | Uso quotidiano, emergenze su computer con poca RAM |
+| `resq:7b` | Qwen 2.5 7B | 4.7 GB | 8 GB+ | **Il migliore per le emergenze**: risposte più chiare e precise |
+| `resq-think:1.5b` | DeepSeek-R1 1.5B | 1.1 GB | 4 GB+ | Piccoli ragionamenti passo passo. **Non per le emergenze.** |
 | `resq-think:7b` | DeepSeek-R1 7B | 4.7 GB | 8 GB+ | Calcoli, logica, pianificazione |
 | `resq-vision:7b` | Qwen 2.5 VL 7B | 6 GB | 10 GB+ | Leggere foto, screenshot, orari, moduli |
+
+Nei test i modelli 1.5B a volte rifiutavano o si ripetevano sulle domande di emergenza: a questa dimensione nessuna istruzione lo risolve. Usa `resq:7b` se il computer ha almeno 8 GB di RAM, altrimenti `resq:3b`.
 
 ## Requisiti
 
 **Per creare la chiavetta:**
-- chiavetta da **64 GB o più** (meglio USB 3), formattata **exFAT**: la versione completa occupa circa 42 GB;
+- chiavetta da **64 GB o più** (meglio USB 3), formattata **exFAT**: la versione completa occupa circa 47 GB;
 - un computer Linux x86_64 o macOS, con `bash`, `curl`, `tar`, `unzip` e `perl` (su Linux anche `zstd`);
 - circa 20 GB liberi sul disco interno, per i download temporanei;
 - internet: circa 40 GB da scaricare, da 1 a 3 ore.
 
 **Per usare la chiavetta:**
 - Windows 10 (22H2) o 11 a 64 bit, macOS 14 o successivi (Intel o Apple Silicon), oppure Linux x86_64;
-- almeno 6 GB di RAM per il modello predefinito (4 GB per il più piccolo) e un browser qualsiasi;
+- almeno 6 GB di RAM per il modello predefinito, **consigliati 8 GB** per `resq:7b`, e un browser qualsiasi;
 - Android (facoltativo): Android 10 o successivo, meglio con 6 GB di RAM.
 
 Per usarla non serve internet.
@@ -70,7 +81,7 @@ Per usarla non serve internet.
    ./build-stick.sh /Volumes/RESQ             # Mac
    ```
    Scarica tutto dalle fonti ufficiali e controlla i checksum. Se si interrompe, puoi rilanciarlo.
-   Versioni più leggere: `--skip-wikipedia` (−10.7 GB), `--skip-big-models` (−10.7 GB) e `--skip-android` (−4.4 GB). Con tutte e tre occupa circa 16 GB, quindi basta una chiavetta da 32 GB.
+   Versioni più leggere: `--skip-wikipedia` (−10.7 GB), `--skip-big-models` (−15.4 GB) e `--skip-android` (−4.4 GB). Con tutte e tre occupa circa 16 GB, quindi basta una chiavetta da 32 GB.
 4. Espelli la chiavetta in modo sicuro.
 
 **Copiare una chiavetta pronta:** copia tutto il contenuto nella cartella principale di un'altra chiavetta exFAT da almeno 64 GB. Funziona allo stesso modo.
@@ -84,6 +95,11 @@ Per usarla non serve internet.
 Si apre il browser su `http://127.0.0.1:8090/`. Scegli il modello, scrivi e premi Invio. Per chiudere, torna alla finestra nera o del Terminale e premi Invio.
 
 **Android:** segui [`stick/android/LEGGIMI-ANDROID.txt`](stick/android/LEGGIMI-ANDROID.txt). Fallo **prima** che serva, e provalo una volta in modalità aereo.
+
+## Limiti noti
+
+- I modelli piccoli possono sbagliare. Nei test `resq:7b` ha seguito correttamente le schede di emergenza e di primo soccorso. `resq:3b` ha risposto bene sul primo soccorso, ma a volte ha mescolato una riga di un'altra emergenza. I modelli 1.5B potevano rifiutare o ripetersi. Per i passi da cui dipende una vita usa le **schede di emergenza**, che sono testo fisso e non AI.
+- I launcher per Windows e macOS sono stati provati poco nella pratica: se qualcosa non va, apri una issue.
 
 ## Licenza
 

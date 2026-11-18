@@ -40,9 +40,10 @@ ALTRI COMANDI (Windows: start-ai.bat ..., Mac: bash start-ai.command ...)
   start-ai.sh rm MODELLO            cancella un modello dalla chiavetta
 
 MODELLI SULLA CHIAVETTA  (spiegazione semplice: vedi MODELLI.txt)
-  resq:1.5b         986 MB  il più veloce, risposte semplici
+  resq:1.5b         986 MB  il più veloce, risposte semplici - NON per le emergenze
   resq:3b           1.9 GB  il migliore per l'uso di tutti i giorni (predefinito)
-  resq-think:1.5b   1.1 GB  piccolo modello che "ragiona"
+  resq:7b           4.7 GB  le risposte migliori, il migliore per le emergenze; circa 8 GB di RAM
+  resq-think:1.5b   1.1 GB  piccolo modello che "ragiona" - NON per le emergenze
   resq-think:7b     4.7 GB  ragionamento più forte, servono circa 8 GB di RAM
   resq-vision:7b    6.0 GB  legge le immagini (pulsante Immagine); servono circa 10 GB di RAM
 
@@ -50,5 +51,5 @@ NOTE
   - Tutto ascolta solo su 127.0.0.1: gli altri dispositivi della rete non possono collegarsi.
   - Le funzioni cloud sono disattivate: è tutto locale.
   - La prima risposta è più lenta, perché il modello si carica dalla chiavetta.
-  - Con il computer a batteria usa i modelli piccoli: resq:3b o resq:1.5b.
+  - In emergenza usa resq:7b (con 8 GB di RAM o più) o resq:3b. A batteria resq:3b consuma meno.
   - Prima di staccare la chiavetta, espellila in modo sicuro.

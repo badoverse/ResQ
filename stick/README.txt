@@ -39,9 +39,10 @@ OTHER COMMANDS (Windows: start-ai.bat ..., Mac: bash start-ai.command ...)
   start-ai.sh rm MODEL              delete a model from the stick
 
 MODELS ON THE STICK  (plain-language guide: see MODELS.txt)
-  resq:1.5b         986 MB  fastest, basic answers
+  resq:1.5b         986 MB  fastest, basic answers - NOT for emergencies
   resq:3b           1.9 GB  good everyday balance (default)
-  resq-think:1.5b   1.1 GB  small "thinking" model
+  resq:7b           4.7 GB  best answers, best for emergencies; needs ~8 GB RAM
+  resq-think:1.5b   1.1 GB  small "thinking" model - NOT for emergencies
   resq-think:7b     4.7 GB  stronger reasoning, needs ~8 GB RAM
   resq-vision:7b    6.0 GB  reads images (use the Image button); needs ~10 GB RAM
 
@@ -49,9 +50,9 @@ NOTES
   - Everything listens on 127.0.0.1 only: other devices on the network cannot reach it.
     AI server port 11435 (won't clash with an installed Ollama), chat + library port 8090.
   - Cloud features are turned off (OLLAMA_NO_CLOUD=1): it is fully local.
-  - Context is 4096 tokens to keep RAM low. Raise it: set OLLAMA_CONTEXT_LENGTH=8192 before starting.
+  - Context is 8192 tokens. On low-RAM computers lower it: set OLLAMA_CONTEXT_LENGTH=4096 before starting.
   - Running from USB: the first answer takes longer (the model loads from the stick).
-  - On battery, prefer small models: resq:3b or resq:1.5b.
+  - In an emergency use resq:7b (8 GB+ RAM) or resq:3b. On battery, resq:3b uses less power.
   - NVIDIA GPUs are used automatically on Windows/Linux; Apple Silicon GPUs on Mac.
   - Eject the stick safely before unplugging.
 

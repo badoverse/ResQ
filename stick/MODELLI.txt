@@ -3,14 +3,16 @@ QUALE MODELLO DI AI SCELGO?
 
 Tutti i modelli funzionano solo su questo computer. Niente di quello che scrivi va su internet.
 I modelli più grandi rispondono meglio, ma sono più lenti e usano più memoria (RAM).
-Se non sei sicuro, scegli resq:3b.
+Se non sei sicuro, scegli resq:3b. Se il computer ha almeno 8 GB di RAM, scegli resq:7b:
+in emergenza dà le risposte migliori.
+I due modelli 1.5b sono troppo piccoli per le emergenze: possono rifiutare o ripetersi.
 
 
 resq:1.5b - "L'aiutante veloce"
   Dimensione: 986 MB    Serve: almeno 4 GB di RAM
   Il più piccolo e veloce. Funziona su quasi tutti i computer, anche vecchi.
   Va bene per: domande brevi, definizioni, riformulare frasi, traduzioni brevi.
-  Non va bene per: domande lunghe o difficili. Può sbagliare o inventare.
+  Non va bene per: emergenze, domande lunghe o difficili. Può rifiutare, ripetersi o inventare.
 
 resq:3b - "L'aiutante di tutti i giorni"  (comincia da qui)
   Dimensione: 1.9 GB    Serve: almeno 6 GB di RAM
@@ -19,11 +21,17 @@ resq:3b - "L'aiutante di tutti i giorni"  (comincia da qui)
   traduzioni tra le lingue più comuni, piccoli aiuti con il codice.
   Non va bene per: matematica difficile o fatti che devono essere esatti.
 
+resq:7b - "L'aiutante migliore"  (il migliore per le emergenze)
+  Dimensione: 4.7 GB    Serve: almeno 8 GB di RAM
+  Il modello generale più forte. Risposte più chiare e precise, e un italiano migliore.
+  Va bene per: istruzioni di emergenza, primo soccorso, piani, tutto ciò che è importante.
+  Non va bene per: computer vecchi o con poca memoria. È più lento di resq:3b.
+
 resq-think:1.5b - "Il piccolo ragionatore"
   Dimensione: 1.1 GB    Serve: almeno 4 GB di RAM
   Prima di rispondere "pensa ad alta voce": puoi aprire il suo ragionamento.
   Va bene per: piccoli problemi passo dopo passo su computer poco potenti.
-  Non va bene per: chiacchierare o scrivere testi. È piccolo e può ragionare male.
+  Non va bene per: emergenze, chiacchierare o scrivere testi. È piccolo e può ragionare male.
   Funziona meglio in inglese.
 
 resq-think:7b - "Il ragionatore attento"

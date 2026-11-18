@@ -11,7 +11,7 @@ if [ "$(uname -m)" = "arm64" ]; then KIWIX="$DIR/kiwix/mac-arm/kiwix-serve"; els
 WEB_PORT=8090
 export OLLAMA_MODELS="$DIR/models"
 export OLLAMA_HOST="${OLLAMA_HOST:-127.0.0.1:11435}"
-export OLLAMA_CONTEXT_LENGTH="${OLLAMA_CONTEXT_LENGTH:-4096}"
+export OLLAMA_CONTEXT_LENGTH="${OLLAMA_CONTEXT_LENGTH:-8192}"
 export OLLAMA_KEEP_ALIVE="${OLLAMA_KEEP_ALIVE:-5m}"
 # Fully local: no Ollama cloud models or cloud features.
 export OLLAMA_NO_CLOUD=1

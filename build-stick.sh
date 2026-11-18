@@ -6,7 +6,7 @@
 #
 # Options:
 #   --skip-wikipedia   don't download the full Italian Wikipedia (saves 10.7 GB)
-#   --skip-big-models  don't download resq-think:7b and resq-vision:7b (saves 10.7 GB)
+#   --skip-big-models  don't download resq:7b, resq-think:7b, resq-vision:7b (saves 15.4 GB)
 #   --skip-android     don't prepare the android/ folder (saves ~4.4 GB)
 #   --skip-guides      don't download the Protezione Civile PDF leaflets
 #   --keep-cache       keep the download cache (default: deleted at the end)
@@ -78,9 +78,9 @@ case "$fstype" in
   *) echo "WARNING: the stick filesystem is '$fstype'. exFAT is recommended so it works on Windows, Mac and Linux." ;;
 esac
 
-need_gb=42   # full build; minimal build ~16 GB
+need_gb=47   # full build; minimal build ~16 GB
 [ $SKIP_WIKI = 1 ] && need_gb=$((need_gb - 11))
-[ $SKIP_BIG = 1 ] && need_gb=$((need_gb - 11))
+[ $SKIP_BIG = 1 ] && need_gb=$((need_gb - 16))
 [ $SKIP_ANDROID = 1 ] && need_gb=$((need_gb - 4))
 free_gb=$(( $(df -Pk "$TARGET" | awk 'NR==2 {print $4}') / 1024 / 1024 ))
 [ "$free_gb" -ge "$need_gb" ] || die "the stick needs about ${need_gb} GB free, it has ${free_gb} GB"
@@ -162,12 +162,12 @@ trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
 for _ in $(seq 1 30); do "$HOST_OLLAMA" list >/dev/null 2>&1 && break; sleep 1; done
 "$HOST_OLLAMA" list >/dev/null 2>&1 || die "Ollama build server did not start, see $CACHE/build-ollama.log"
 SYSTEM_PROMPT="$(cat "$REPO/modelfiles/system-prompt.txt")"
-while read -r name base _size group; do
+while read -r name base _size group temp; do
   [ -n "$name" ] || continue
   if [ "$group" = big ] && [ $SKIP_BIG = 1 ]; then echo "  skipping $name"; continue; fi
   echo "  $name  (from $base)"
   "$HOST_OLLAMA" pull "$base" </dev/null
-  printf 'FROM %s\nSYSTEM """%s"""\n' "$base" "$SYSTEM_PROMPT" > "$CACHE/Modelfile"
+  printf 'FROM %s\nSYSTEM """%s"""\nPARAMETER temperature %s\nPARAMETER repeat_penalty 1.1\n' "$base" "$SYSTEM_PROMPT" "${temp:-0.3}" > "$CACHE/Modelfile"
   "$HOST_OLLAMA" create "$name" -f "$CACHE/Modelfile" </dev/null
   "$HOST_OLLAMA" rm "$base" >/dev/null </dev/null   # the model files stay: ResQ uses them
 done < <(grep -v '^#' "$REPO/modelfiles/models.txt")

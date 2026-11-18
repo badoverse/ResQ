@@ -65,6 +65,13 @@
   }
   #attachInfo { font-size: 14px; color: var(--muted); max-width: 820px; margin: 0 auto 6px; display: none; }
   #status { font-size: 14px; color: var(--muted); }
+  .cards { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  .cards span { font-size: 14px; color: var(--muted); margin-right: 4px; }
+  .cards button { min-height: 36px; padding: 4px 10px; font-size: 15px; border-color: var(--danger); color: var(--danger); }
+  .msg.card { align-self: stretch; max-width: 100%; background: var(--ai); border: 2px solid var(--danger); }
+  .msg.card h3 { margin: 0 0 6px; font-size: 18px; color: var(--danger); }
+  .msg.card ol { margin: 0; padding-left: 1.4em; } .msg.card li { margin: .25em 0; }
+  .msg.card .src { font-size: 13px; color: var(--muted); margin-top: 8px; }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -77,10 +84,12 @@
   <button id="newChat" data-t="new">Nuova chat</button>
   <button id="lang" title="Lingua / Language">EN</button>
 </header>
+<div class="banner hidden" id="smallNote"></div>
 <div class="banner">
   <span data-t="warn"><b>Emergenza? Chiama il 112.</b> L'AI può sbagliare: per salute e sicurezza controlla sempre le guide ufficiali.</span>
   <span class="links" id="books"></span>
 </div>
+<nav class="cards" id="cards" aria-label="Schede di emergenza"></nav>
 <main id="log"><div class="wrap" id="msgs">
   <div class="empty" id="empty">
     <p data-t="hello1">Ciao, sono ResQ. Scrivi una domanda qui sotto e premi Invio.</p>
@@ -101,7 +110,8 @@
 </footer>
 <script>
 const API = 'http://127.0.0.1:11435';
-const DEFAULT_MODEL = 'resq:3b';
+// resq:7b gives the best emergency answers but needs ~8 GB RAM. Chrome/Edge report RAM (capped at 8).
+const DEFAULT_MODEL = (navigator.deviceMemory || 0) >= 8 ? 'resq:7b' : 'resq:3b';
 const T = {
   it: {
     model: 'Modello', new: 'Nuova chat', image: 'Immagine', send: 'Invia', stop: 'Ferma',
@@ -114,7 +124,7 @@ const T = {
     noServer: "ResQ non risponde. Chiudi questa pagina e riavvia start-ai dalla chiavetta.",
     noModels: 'Nessun modello trovato sulla chiavetta.', attached: 'Immagine allegata:', remove: 'rimuovi',
     stopped: '[fermato]', ready: 'Pronto.',
-    system: "Sei ResQ, un assistente per le emergenze che funziona offline, senza internet. Il tuo nome è ResQ: se ti chiedono chi sei, rispondi che sei ResQ. Rispondi nella lingua dell'utente, in modo chiaro e semplice. Se non sei sicuro, dillo. Per emergenze mediche o pericoli immediati, di' sempre di chiamare il 112 e di seguire le indicazioni della Protezione Civile."
+    small: 'Modello piccolo: va bene per domande semplici, ma per le emergenze usa resq:3b o resq:7b.',
   },
   en: {
     model: 'Model', new: 'New chat', image: 'Image', send: 'Send', stop: 'Stop',
@@ -127,7 +137,7 @@ const T = {
     noServer: 'ResQ is not responding. Close this page and start start-ai again from the stick.',
     noModels: 'No models found on the stick.', attached: 'Image attached:', remove: 'remove',
     stopped: '[stopped]', ready: 'Ready.',
-    system: "You are ResQ, an offline emergency assistant that works without internet. Your name is ResQ: if asked who you are, say you are ResQ. Answer in the user's language, clearly and simply. If you are not sure, say so. For medical emergencies or immediate danger, always say to call 112 and follow civil protection instructions."
+    small: 'Small model: fine for simple questions, but for emergencies use resq:3b or resq:7b.',
   }
 };
 const $ = id => document.getElementById(id);
@@ -150,7 +160,9 @@ $('lang').onclick = () => {
   lang = lang === 'it' ? 'en' : 'it';
   try { localStorage.setItem('lang', lang); } catch (e) {}
   applyLang();
+  renderCards();
   loadBooks();
+  if ($('model').value) onModel();
 };
 
 function esc(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -216,6 +228,9 @@ function onModel() {
   const m = $('model').value;
   try { localStorage.setItem('model', m); } catch (e) {}
   $('attach').classList.toggle('hidden', !(caps[m] || []).includes('vision'));
+  const note = $('smallNote');
+  note.textContent = /:1\.5b$/.test(m) ? t('small') : '';
+  note.classList.toggle('hidden', !note.textContent);
   if (!(caps[m] || []).includes('vision')) clearImage();
 }
 $('model').onchange = onModel;
@@ -267,7 +282,8 @@ async function send() {
 
   const box = addMsg('ai', '<span style="color:var(--muted)">' + esc(t('loading')) + '</span>');
   const thinks = (caps[model] || []).includes('thinking');
-  const body = { model, stream: true, messages: [{ role: 'system', content: t('system') }, ...history] };
+  // ResQ's instructions and emergency playbook are built into the resq models (modelfiles/system-prompt.txt).
+  const body = { model, stream: true, messages: history };
   if (thinks) body.think = true;
 
   controller = new AbortController(); busy(true);
@@ -314,7 +330,46 @@ async function loadBooks() {
   } catch (e) {}
 }
 
+// Emergency cards: fixed, checked instructions shown instantly, with no AI involved.
+const CARDS = {
+  it: { label: 'Schede di emergenza (senza AI):', src: "Scheda fissa, non generata dall'AI. Chiama il 112 se puoi.", cards: [
+    ['Emorragia', ['Chiama il 112 o fai chiamare qualcuno, se possibile.', 'Premi subito forte sulla ferita con un panno pulito (o con la mano). Se il panno si inzuppa, non toglierlo: aggiungine un altro sopra.', 'Continua a premere senza fermarti.', 'Se il sangue esce a fiotti da un braccio o da una gamba e premere non basta: metti un laccio (cintura, cinghia, striscia di stoffa) 5-7 cm sopra la ferita e stringi finché il sangue si ferma.', "Annota l'ora del laccio. Non allentarlo mai: lo toglieranno i medici.", 'Tieni la persona sdraiata, al caldo, e parlale.']],
+    ['Non respira', ['Chiama il 112 e metti il vivavoce. Se non risponde, riprova mentre aiuti.', 'Metti la persona a pancia in su su una superficie dura.', 'Massaggio cardiaco SUBITO: mani una sopra l\'altra al centro del petto, braccia tese, spingi giù 5-6 cm, 100-120 volte al minuto (ritmo di "Stayin\' Alive").', 'Non fermarti. Se sai farlo: 2 respiri ogni 30 compressioni. Se non sai farlo: solo compressioni continue.', 'Se c\'è un defibrillatore (DAE): accendilo e segui la voce.', 'Continua finché arrivano i soccorsi o la persona si riprende. In due, datevi il cambio ogni 2 minuti.']],
+    ['Svenuto ma respira', ['Chiama il 112.', 'Mettila sul fianco (posizione laterale di sicurezza), testa leggermente all\'indietro.', 'Controlla che continui a respirare. Se smette: scheda "Non respira".']],
+    ['Soffocamento', ['Se non riesce a respirare né a parlare: piegala in avanti e dai 5 colpi forti tra le scapole con il palmo.', 'Poi 5 compressioni addominali (Heimlich): da dietro, pugno sopra l\'ombelico, tira forte verso di te e verso l\'alto.', 'Ripeti 5 colpi e 5 compressioni finché l\'oggetto esce.', 'Se perde conoscenza: chiama il 112 e passa alla scheda "Non respira".']],
+    ['Ustione', ['Acqua fresca corrente sulla ustione per 20 minuti.', 'Togli anelli, orologi e vestiti non attaccati alla pelle.', 'Copri con pellicola trasparente o un panno pulito. Niente ghiaccio, olio, burro o creme.', 'Chiama il 112 se è grande, sul viso o sulle mani, o se è un bambino.']],
+    ['Bombardamento', ['Vai subito nel riparo più vicino: rifugio pubblico, metropolitana, parcheggio sotterraneo, cantina.', 'Se non c\'è: stanza interna senza finestre al piano più basso, con almeno due muri tra te e l\'esterno (corridoio o bagno).', 'Stai lontano da finestre e vetri. Sdraiati a terra e proteggi la testa.', 'Porta il kit: acqua, medicine, torcia, radio a batterie, power bank, documenti, scarpe chiuse, vestiti caldi.', 'Resta al riparo finché le autorità non dicono che è finito. Ascolta la radio.', 'Dopo: non toccare oggetti sconosciuti o ordigni inesplosi. Chiudi il gas se senti odore. Evita edifici danneggiati e cavi a terra.']],
+    ['Terremoto', ['Durante: riparati sotto un tavolo robusto o vicino a un muro portante, lontano da finestre e mobili alti.', 'Non usare ascensori. Non precipitarti sulle scale.', 'Dopo: esci con prudenza, con le scarpe. Chiudi gas e corrente se puoi.', 'Vai in uno spazio aperto, lontano da edifici, alberi e cavi.', 'Segui le indicazioni della Protezione Civile e del Comune.']],
+    ['Incendio', ['Esci subito e chiama il 115 o il 112.', 'Chiudi le porte dietro di te. Stai basso, sotto il fumo.', 'Prima di aprire una porta, toccala col dorso della mano: se è calda, non aprirla.', 'Non usare l\'ascensore.', 'Se il fuoco prende i vestiti: fermati, buttati a terra, rotola.']],
+    ['Alluvione', ['Sali ai piani alti. Non scendere in cantina o nei garage.', 'Non usare l\'auto e non attraversare acqua che scorre: bastano 30 cm per trascinare un\'auto.', 'Stacca la corrente solo se puoi farlo all\'asciutto.', 'Bevi solo acqua in bottiglia o bollita.']],
+    ['Allarme nucleare o chimico', ['Nucleare: entra in un edificio solido, vai al centro o in cantina, lontano da porte e finestre. Resta dentro almeno 24 ore, salvo diverse indicazioni.', 'Se eri fuori: togli i vestiti esterni, chiudili in un sacchetto, lavati con acqua e sapone.', 'Non prendere iodio se le autorità non lo dicono.', 'Chimico: entra, chiudi porte e finestre, spegni ventilazione e condizionatori, sali a un piano alto, sigilla le fessure con nastro e panni bagnati.', 'Ascolta la radio e segui le autorità.']]
+  ]},
+  en: { label: 'Emergency cards (no AI):', src: 'Fixed card, not generated by the AI. Call 112 if you can.', cards: [
+    ['Bleeding', ['Call 112 or have someone call, if possible.', 'Press hard on the wound right away with a clean cloth (or your hand). If it soaks through, leave it and add another on top.', 'Keep pressing without stopping.', 'If blood spurts from an arm or leg and pressure is not enough: tie a tourniquet (belt, strap, strip of cloth) 5-7 cm above the wound and tighten until the bleeding stops.', 'Note the time. Never loosen it: doctors will remove it.', 'Keep the person lying down, warm, and talk to them.']],
+    ['Not breathing', ['Call 112 and put it on speaker. If no answer, keep retrying while you help.', 'Lay the person on their back on a hard surface.', 'Start chest compressions NOW: hands on top of each other in the centre of the chest, arms straight, push down 5-6 cm, 100-120 times a minute (the beat of "Stayin\' Alive").', 'Do not stop. If trained: 2 breaths every 30 compressions. If not: compressions only.', 'If there is a defibrillator (AED): switch it on and follow the voice.', 'Continue until help arrives or the person recovers. With two people, swap every 2 minutes.']],
+    ['Unconscious, breathing', ['Call 112.', 'Roll them on their side (recovery position), head tilted slightly back.', 'Check they keep breathing. If they stop: "Not breathing" card.']],
+    ['Choking', ['If they cannot breathe or speak: lean them forward and give 5 firm back blows between the shoulder blades.', 'Then 5 abdominal thrusts (Heimlich): from behind, fist above the navel, pull hard in and up.', 'Repeat 5 blows and 5 thrusts until the object comes out.', 'If they pass out: call 112 and go to the "Not breathing" card.']],
+    ['Burn', ['Cool running water on the burn for 20 minutes.', 'Remove rings, watches and clothing not stuck to the skin.', 'Cover with cling film or a clean cloth. No ice, oil, butter or creams.', 'Call 112 if it is large, on the face or hands, or on a child.']],
+    ['Air raid', ['Go to the nearest shelter now: public shelter, metro, underground car park, basement.', 'If there is none: an inner room without windows on the lowest floor, with at least two walls between you and outside (corridor or bathroom).', 'Keep away from windows and glass. Lie on the floor and protect your head.', 'Take the kit: water, medicines, torch, battery radio, power bank, documents, closed shoes, warm clothes.', 'Stay sheltered until the authorities say it is over. Listen to the radio.', 'After: never touch unknown objects or unexploded bombs. Shut off gas if you smell it. Avoid damaged buildings and fallen cables.']],
+    ['Earthquake', ['During: shelter under a sturdy table or next to a load-bearing wall, away from windows and tall furniture.', 'Do not use lifts. Do not rush down the stairs.', 'After: go out carefully, wearing shoes. Shut off gas and power if you can.', 'Go to an open space, away from buildings, trees and cables.', 'Follow civil protection and local authority instructions.']],
+    ['Fire', ['Get out now and call 115 or 112.', 'Close doors behind you. Stay low, below the smoke.', 'Before opening a door, touch it with the back of your hand: if it is hot, do not open it.', 'Do not use the lift.', 'If your clothes catch fire: stop, drop and roll.']],
+    ['Flood', ['Go to upper floors. Never go into basements or garages.', 'Do not drive and do not cross moving water: 30 cm can sweep away a car.', 'Switch off power only if you can do it while dry.', 'Drink only bottled or boiled water.']],
+    ['Nuclear or chemical alert', ['Nuclear: get inside a solid building, go to the centre or basement, away from doors and windows. Stay inside at least 24 hours unless told otherwise.', 'If you were outside: remove outer clothes, seal them in a bag, wash with soap and water.', 'Do not take iodine unless the authorities say so.', 'Chemical: get inside, close doors and windows, turn off ventilation and air conditioning, go to an upper floor, seal gaps with tape and wet cloths.', 'Listen to the radio and follow the authorities.']]
+  ]}
+};
+function renderCards() {
+  const c = CARDS[lang];
+  $('cards').innerHTML = '<span>' + esc(c.label) + '</span>' +
+    c.cards.map((card, i) => '<button data-card="' + i + '">' + esc(card[0]) + '</button>').join('');
+  $('cards').querySelectorAll('button').forEach(b => b.onclick = () => {
+    const [title, steps] = CARDS[lang].cards[+b.dataset.card];
+    addMsg('card', '<h3>' + esc(title) + '</h3><ol>' + steps.map(x => '<li>' + esc(x) + '</li>').join('') +
+      '</ol><div class="src">' + esc(CARDS[lang].src) + '</div>');
+  });
+}
+
 applyLang();
+renderCards();
 if (location.protocol === 'file:') {
   $('status').textContent = t('fileMode');
 } else {

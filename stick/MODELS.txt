@@ -3,14 +3,16 @@ WHICH AI MODEL SHOULD I PICK?
 
 All models run on this computer only. Nothing you type is sent to the internet.
 Bigger models give better answers, but they are slower and need more memory (RAM).
-If you are not sure, pick resq:3b.
+If you are not sure, pick resq:3b. If the computer has 8 GB of RAM or more, pick resq:7b:
+it gives the best answers in an emergency.
+The two 1.5b models are too small for emergencies: they can refuse or repeat themselves.
 
 
 resq:1.5b - "The quick helper"
   Size: 986 MB    Needs: 4 GB RAM or more
   The smallest and fastest model. It works on almost any computer, even an old one.
   Good for: short questions, quick definitions, simple rewording, short translations.
-  Not good for: long or tricky questions. It can make mistakes or invent facts.
+  Not good for: emergencies, long or tricky questions. It can refuse, repeat itself or invent facts.
 
 resq:3b - "The everyday helper"  (start here)
   Size: 1.9 GB    Needs: 6 GB RAM or more
@@ -19,11 +21,17 @@ resq:3b - "The everyday helper"  (start here)
   translating between common languages, simple coding help.
   Not good for: hard math, or facts that must be exactly right.
 
+resq:7b - "The best helper"  (best for emergencies)
+  Size: 4.7 GB    Needs: 8 GB RAM or more
+  The strongest general model here. Clearer, more accurate answers, and better Italian.
+  Good for: emergency instructions, first aid steps, planning, anything important.
+  Not good for: old or low-memory computers. It is slower than resq:3b.
+
 resq-think:1.5b - "The small thinker"
   Size: 1.1 GB    Needs: 4 GB RAM or more
   It thinks out loud before it answers. You see its reasoning first, then the answer.
   Good for: simple puzzles and step-by-step problems on a low-power computer.
-  Not good for: chatting or writing. It is small, so its reasoning can go wrong.
+  Not good for: emergencies, chatting or writing. It is small, so its reasoning can go wrong.
   Works best in English.
 
 resq-think:7b - "The careful thinker"

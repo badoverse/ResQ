@@ -1,6 +1,7 @@
-# ResQ model name     base model (Ollama library)   size    group
-resq:1.5b             qwen2.5:1.5b                  986MB   small
-resq:3b               qwen2.5:3b                    1.9GB   small
-resq-think:1.5b       deepseek-r1:1.5b              1.1GB   small
-resq-think:7b         deepseek-r1:7b                4.7GB   big
-resq-vision:7b        qwen2.5vl:7b                  6.0GB   big
+# ResQ model name     base model (Ollama library)   size    group   temperature
+resq:1.5b             qwen2.5:1.5b                  986MB   small   0.3
+resq:3b               qwen2.5:3b                    1.9GB   small   0.3
+resq:7b               qwen2.5:7b                    4.7GB   big     0.3
+resq-think:1.5b       deepseek-r1:1.5b              1.1GB   small   0.6
+resq-think:7b         deepseek-r1:7b                4.7GB   big     0.6
+resq-vision:7b        qwen2.5vl:7b                  6.0GB   big     0.3

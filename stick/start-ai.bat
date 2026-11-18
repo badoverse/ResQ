@@ -15,7 +15,7 @@ set "KIWIX=%DIR%kiwix\windows\kiwix-serve.exe"
 set "WEB_PORT=8090"
 set "OLLAMA_MODELS=%DIR%models"
 if not defined OLLAMA_HOST set "OLLAMA_HOST=127.0.0.1:11435"
-if not defined OLLAMA_CONTEXT_LENGTH set "OLLAMA_CONTEXT_LENGTH=4096"
+if not defined OLLAMA_CONTEXT_LENGTH set "OLLAMA_CONTEXT_LENGTH=8192"
 if not defined OLLAMA_KEEP_ALIVE set "OLLAMA_KEEP_ALIVE=5m"
 rem Fully local: no Ollama cloud models or cloud features.
 set "OLLAMA_NO_CLOUD=1"
