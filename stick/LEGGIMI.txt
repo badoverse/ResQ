@@ -29,6 +29,8 @@ COME SI AVVIA (apre la chat e la biblioteca nel browser)
   Il browser apre http://127.0.0.1:8090/ - scegli un modello in alto, scrivi, premi Invio.
   I collegamenti alla biblioteca offline sono in alto nella pagina.
   Per chiudere: torna alla finestra nera (o del Terminale) e premi Invio.
+  Le chat si salvano da sole: le riapri dal pulsante Cronologia. Restano nel browser di quel
+  computer, non sulla chiavetta.
 
   Non aprire chat.html con il doppio clic: funziona solo se la apre start-ai.
 

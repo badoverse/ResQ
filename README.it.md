@@ -37,6 +37,10 @@ Usa l'AI per farti spiegare, riassumere, tradurre o trovare informazioni. Le cos
 
 Nel menu ☰ Emergenze della chat ci sono **schede fisse, non generate dall'AI**, che si aprono con un clic: emorragia, non respira (massaggio cardiaco), svenuto ma respira, soffocamento, ustione, bombardamento, terremoto, incendio, alluvione, allarme nucleare o chimico. Sono sempre uguali e funzionano anche se l'AI è lenta o non parte.
 
+## Cronologia
+
+Ogni chat si salva da sola e si riapre dal menu **Cronologia**. Le chat restano nel browser di quel computer, non sulla chiavetta. Le immagini allegate non vengono salvate. Si tengono le ultime 50 chat.
+
 ## Modelli
 
 | Modello ResQ | Basato su | Dimensione | RAM | Va bene per |

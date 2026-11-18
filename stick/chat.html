@@ -86,6 +86,13 @@
   .lb-row { max-width: 820px; margin: 0 auto; display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--muted); }
   .lb-track { max-width: 820px; height: 8px; margin: 6px auto 0; background: var(--line); border-radius: 4px; overflow: hidden; }
   .lb-fill { height: 100%; width: 0; background: var(--accent); border-radius: 4px; transition: width .3s linear; }
+  .cards.right { left: auto; right: 16px; }
+  .hist-item { display: flex; align-items: stretch; gap: 2px; }
+  .hist-item .open { flex: 1; color: var(--text); display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .hist-item .open small { color: var(--muted); font-size: 12px; }
+  .hist-item .open.current { background: rgba(127,127,127,.12); }
+  .hist-item .del { flex: 0 0 auto; width: 40px; text-align: center; color: var(--muted); }
+  .cards .hist-empty { color: var(--muted); padding: 8px 10px; font-size: 14px; }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -97,6 +104,8 @@
   <label><span data-t="model">Modello</span>
     <select id="model" aria-label="Modello"></select>
   </label>
+  <button id="histBtn" aria-haspopup="true" aria-expanded="false" aria-controls="hist" data-t="history">Cronologia</button>
+  <nav class="cards right hidden" id="hist" aria-label="Cronologia"></nav>
   <button id="newChat" data-t="new">Nuova chat</button>
   <button id="lang" title="Lingua / Language">EN</button>
 </header>
@@ -133,7 +142,8 @@ const API = 'http://127.0.0.1:11435';
 const DEFAULT_MODEL = (navigator.deviceMemory || 0) >= 8 ? 'resq:7b' : 'resq:3b';
 const T = {
   it: {
-    cardsBtn: 'Emergenze',
+    cardsBtn: 'Emergenze', history: 'Cronologia', histTitle: 'Chat salvate su questo computer:', histEmpty: 'Nessuna chat salvata.',
+    del: 'Elimina', delConfirm: 'Eliminare questa chat?', imgNotSaved: '[immagine non salvata]', untitled: 'Chat senza titolo',
     model: 'Modello', new: 'Nuova chat', image: 'Immagine', send: 'Invia', stop: 'Ferma',
     warn: "<b>Emergenza? Chiama il 112.</b> L'AI può sbagliare: per salute e sicurezza controlla sempre le guide ufficiali.",
     library: 'Biblioteca offline:', guides: 'Guide Protezione Civile e scheda emergenza: cartella <b>guide</b> sulla chiavetta.',
@@ -148,7 +158,8 @@ const T = {
     small: 'Modello piccolo: va bene per domande semplici, ma per le emergenze usa resq:3b o resq:7b.',
   },
   en: {
-    cardsBtn: 'Emergencies',
+    cardsBtn: 'Emergencies', history: 'History', histTitle: 'Chats saved on this computer:', histEmpty: 'No saved chats.',
+    del: 'Delete', delConfirm: 'Delete this chat?', imgNotSaved: '[image not saved]', untitled: 'Untitled chat',
     model: 'Model', new: 'New chat', image: 'Image', send: 'Send', stop: 'Stop',
     warn: '<b>Emergency? Call 112.</b> The AI can be wrong: for health and safety always check the official guides.',
     library: 'Offline library:', guides: 'Civil protection guides and emergency sheet: <b>guide</b> folder on the stick.',
@@ -243,7 +254,6 @@ async function loadModels() {
       } catch (e) { caps[n] = []; }
     }));
     onModel(true);
-    $('status').textContent = t('ready');
   } catch (e) {
     $('status').textContent = t('noServer');
   }
@@ -283,17 +293,19 @@ async function isLoaded(model) {
     return (ps.models || []).some(x => x.name === model || x.model === model);
   } catch (e) { return false; }
 }
-// Run one step with an estimated progress bar.
-async function step(label, model, expected, run) {
+// Run one step with an estimated progress bar. The step fills the part of the bar from
+// `from` to `to`, so the bar only ever moves forward across both steps.
+async function step(label, model, expected, from, to, run) {
   const t0 = performance.now();
+  const text = fmt(t(label), model, Math.round(expected));
   const tick = () => {
     const el = (performance.now() - t0) / 1000;
-    showBar(fmt(t(label), model, Math.round(expected)), Math.min(0.95, 1 - Math.exp(-1.6 * el / expected)));
+    showBar(text, from + (to - from) * Math.min(0.95, 1 - Math.exp(-1.6 * el / expected)));
   };
   tick();
   const timer = setInterval(tick, 250);
   try { await run(); } finally { clearInterval(timer); }
-  showBar(fmt(t(label), model, Math.round(expected)), 1);
+  showBar(text, to);
 }
 async function post(path, body, signal) {
   const r = await fetch(API + path, { method: 'POST', signal, body: JSON.stringify(body) });
@@ -307,14 +319,18 @@ function warmUp(model) {
   warm = { model, ctrl, promise: (async () => {
     try {
       if (!(await isLoaded(model))) {
-        await step('lbLoading', model, Math.max(3, gb * 1000 / READ_MB_PER_S),
+        $('status').textContent = '';
+        const load = Math.max(3, gb * 1000 / READ_MB_PER_S), prep = Math.max(3, gb * PREP_S_PER_GB);
+        const split = load / (load + prep);
+        await step('lbLoading', model, load, 0, split,
           () => post('/api/generate', { model, keep_alive: KEEP_ALIVE }, ctrl.signal));
         // Read ResQ's built-in instructions once; Ollama caches them, so later answers start fast.
-        await step('lbPreparing', model, Math.max(3, gb * PREP_S_PER_GB),
+        await step('lbPreparing', model, prep, split, 1,
           () => post('/api/chat', { model, stream: false, keep_alive: KEEP_ALIVE,
             messages: [{ role: 'user', content: 'ok' }], options: { num_predict: 1 } }, ctrl.signal));
       }
       hideBar();
+      $('status').textContent = t('ready');
     } catch (e) {
       if (e.name !== 'AbortError') { hideBar(); $('status').textContent = String(e.message || e); }
     }
@@ -336,11 +352,85 @@ $('file').onchange = () => {
 };
 function clearImage() { pendingImage = null; pendingImageURL = ''; $('file').value = ''; $('attachInfo').style.display = 'none'; }
 
-$('newChat').onclick = () => {
-  if (controller) controller.abort();
-  history = []; clearImage();
+// Saved chats live in this browser's localStorage (on this computer, not on the stick).
+// Attached images are not saved, to keep space free. The newest 50 chats are kept.
+const CHATS_KEY = 'resq.chats';
+const MAX_CHATS = 50;
+let chatId = null;
+function loadChats() {
+  try { return JSON.parse(localStorage.getItem(CHATS_KEY)) || []; } catch (e) { return []; }
+}
+function storeChats(chats) {
+  chats = chats.slice(0, MAX_CHATS);
+  for (;;) {
+    try { localStorage.setItem(CHATS_KEY, JSON.stringify(chats)); return; }
+    catch (e) { if (chats.length <= 1) return; chats = chats.slice(0, -1); }  // full: drop the oldest
+  }
+}
+function saveChat(id, conv, model) {
+  if (!conv.length) return;
+  const messages = conv.map(m => {
+    const out = { role: m.role, content: m.content };
+    if (m.thinking) out.thinking = m.thinking;
+    if (m.images) out.image = true;
+    return out;
+  });
+  const first = conv.find(m => m.role === 'user');
+  const title = ((first && first.content) || '').replace(/\s+/g, ' ').trim().slice(0, 60) || t('untitled');
+  const chats = loadChats().filter(c => c.id !== id);
+  chats.unshift({ id, title, model, updated: Date.now(), messages });
+  storeChats(chats);
+}
+function clearLog() {
   $('msgs').querySelectorAll('.msg').forEach(n => n.remove());
   $('empty').classList.remove('hidden');
+}
+function aiHTML(answer, thought) {
+  return (thought ? '<details class="think"><summary>' + esc(t('thinking')) + '</summary>' + md(thought) + '</details>' : '') + md(answer);
+}
+function openChat(id) {
+  const c = loadChats().find(x => x.id === id);
+  if (!c) return;
+  if (controller) controller.abort();
+  clearImage(); clearLog();
+  chatId = c.id;
+  history = c.messages.map(m => ({ role: m.role, content: m.content, ...(m.thinking ? { thinking: m.thinking } : {}) }));
+  for (const m of c.messages) {
+    if (m.role === 'user') addMsg('me', esc(m.content).replace(/\n/g, '<br>') + (m.image ? ' <em>' + esc(t('imgNotSaved')) + '</em>' : ''));
+    else addMsg('ai', aiHTML(m.content, m.thinking));
+  }
+  if (c.model && [...$('model').options].some(o => o.value === c.model) && $('model').value !== c.model) {
+    $('model').value = c.model; onModel(true);
+  }
+}
+function deleteChat(id) {
+  if (!confirm(t('delConfirm'))) return;
+  storeChats(loadChats().filter(c => c.id !== id));
+  if (id === chatId) { chatId = null; history = []; clearLog(); }
+  renderHistory();
+}
+function renderHistory() {
+  const chats = loadChats();
+  const fmtDate = ts => new Date(ts).toLocaleString(lang === 'it' ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  $('hist').innerHTML = '<span>' + esc(t('histTitle')) + '</span>' + (chats.length ? chats.map(c =>
+    '<div class="hist-item"><button class="open' + (c.id === chatId ? ' current' : '') + '" data-id="' + esc(c.id) + '">' +
+    esc(c.title) + '<small>' + esc(fmtDate(c.updated)) + ' · ' + esc(c.model || '') + '</small></button>' +
+    '<button class="del" data-del="' + esc(c.id) + '" title="' + esc(t('del')) + '" aria-label="' + esc(t('del') + ': ' + c.title) + '">&times;</button></div>'
+  ).join('') : '<div class="hist-empty">' + esc(t('histEmpty')) + '</div>');
+  $('hist').querySelectorAll('[data-id]').forEach(b => b.onclick = () => { toggleHist(false); openChat(b.dataset.id); });
+  $('hist').querySelectorAll('[data-del]').forEach(b => b.onclick = e => { e.stopPropagation(); deleteChat(b.dataset.del); });
+}
+function toggleHist(open) {
+  if (open) renderHistory();
+  $('hist').classList.toggle('hidden', !open);
+  $('histBtn').setAttribute('aria-expanded', String(open));
+  if (open) { const first = $('hist').querySelector('button'); if (first) first.focus(); }
+}
+$('histBtn').onclick = e => { e.stopPropagation(); toggleMenu(false); toggleHist($('hist').classList.contains('hidden')); };
+
+$('newChat').onclick = () => {
+  if (controller) controller.abort();
+  chatId = null; history = []; clearImage(); clearLog();
 };
 
 const input = $('input');
@@ -363,13 +453,16 @@ async function send() {
   let html = esc(text).replace(/\n/g, '<br>');
   if (pendingImage) { userMsg.images = [pendingImage]; html += '<img alt="" src="' + pendingImageURL + '">'; }
   addMsg('me', html);
-  history.push(userMsg);
+  // Bind this reply to the current chat, even if the user switches chat before it finishes.
+  if (!chatId) chatId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const conv = history, convId = chatId;
+  conv.push(userMsg);
   input.value = ''; input.style.height = 'auto'; clearImage();
 
   const box = addMsg('ai', '<span style="color:var(--muted)">' + esc(t('loading')) + '</span>');
   const thinks = (caps[model] || []).includes('thinking');
   // ResQ's instructions and emergency playbook are built into the resq models (modelfiles/system-prompt.txt).
-  const body = { model, stream: true, keep_alive: KEEP_ALIVE, messages: history };
+  const body = { model, stream: true, keep_alive: KEEP_ALIVE, messages: conv };
   if (thinks) body.think = true;
 
   controller = new AbortController(); busy(true);
@@ -377,7 +470,7 @@ async function send() {
   if (warm.model === model) await warm.promise;
   let answer = '', thought = '';
   const render = () => {
-    box.innerHTML = (thought ? '<details class="think"><summary>' + esc(t('thinking')) + '</summary>' + md(thought) + '</details>' : '') + md(answer);
+    box.innerHTML = aiHTML(answer, thought);
     $('log').scrollTop = $('log').scrollHeight;
   };
   try {
@@ -397,10 +490,15 @@ async function send() {
       }
       render();
     }
-    history.push({ role: 'assistant', content: answer });
+    conv.push({ role: 'assistant', content: answer, ...(thought ? { thinking: thought } : {}) });
+    saveChat(convId, conv, model);
   } catch (e) {
-    if (e.name === 'AbortError') { answer += '\n\n' + t('stopped'); render(); history.push({ role: 'assistant', content: answer }); }
-    else { box.remove(); history.pop(); addMsg('err', esc(String(e.message || e))); if (String(e).includes('fetch')) addMsg('err', esc(t('noServer'))); }
+    if (e.name === 'AbortError') {
+      answer += '\n\n' + t('stopped'); if (convId === chatId) render();
+      conv.push({ role: 'assistant', content: answer, ...(thought ? { thinking: thought } : {}) });
+      saveChat(convId, conv, model);
+    }
+    else { box.remove(); conv.pop(); addMsg('err', esc(String(e.message || e))); if (String(e).includes('fetch')) addMsg('err', esc(t('noServer'))); }
   } finally {
     controller = null; busy(false); input.focus();
   }
@@ -461,10 +559,14 @@ function toggleMenu(open) {
   $('menuBtn').setAttribute('aria-expanded', String(open));
   if (open) { const first = $('cards').querySelector('button'); if (first) first.focus(); }
 }
-$('menuBtn').onclick = e => { e.stopPropagation(); toggleMenu($('cards').classList.contains('hidden')); };
-document.addEventListener('click', e => { if (!$('cards').contains(e.target)) toggleMenu(false); });
+$('menuBtn').onclick = e => { e.stopPropagation(); toggleHist(false); toggleMenu($('cards').classList.contains('hidden')); };
+document.addEventListener('click', e => {
+  if (!$('cards').contains(e.target)) toggleMenu(false);
+  if (!$('hist').contains(e.target)) toggleHist(false);
+});
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !$('cards').classList.contains('hidden')) { toggleMenu(false); $('menuBtn').focus(); }
+  if (e.key === 'Escape' && !$('hist').classList.contains('hidden')) { toggleHist(false); $('histBtn').focus(); }
 });
 
 applyLang();

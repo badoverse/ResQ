@@ -28,6 +28,8 @@ START (opens the chat and the library in your web browser)
   The browser opens http://127.0.0.1:8090/ - pick a model at the top, type, press Enter.
   Links to the offline library are at the top of the page.
   To stop: go back to the black/Terminal window and press Enter.
+  Chats are saved automatically: reopen them from the History button. They are stored in the
+  browser of that computer, not on the stick.
 
   Do not double-click chat.html directly: it only works when opened by start-ai.
 
