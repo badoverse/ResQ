@@ -35,7 +35,7 @@ Usa l'AI per farti spiegare, riassumere, tradurre o trovare informazioni. Le cos
 
 ## Schede di emergenza
 
-Nella pagina della chat ci sono **schede fisse, non generate dall'AI**, che si aprono con un clic: emorragia, non respira (massaggio cardiaco), svenuto ma respira, soffocamento, ustione, bombardamento, terremoto, incendio, alluvione, allarme nucleare o chimico. Sono sempre uguali e funzionano anche se l'AI è lenta o non parte.
+Nel menu ☰ Emergenze della chat ci sono **schede fisse, non generate dall'AI**, che si aprono con un clic: emorragia, non respira (massaggio cardiaco), svenuto ma respira, soffocamento, ustione, bombardamento, terremoto, incendio, alluvione, allarme nucleare o chimico. Sono sempre uguali e funzionano anche se l'AI è lenta o non parte.
 
 ## Modelli
 
