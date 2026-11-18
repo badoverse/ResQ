@@ -1,0 +1,54 @@
+ResQ - chiavetta di emergenza: assistente AI + biblioteca offline + guide di emergenza
+======================================================================================
+(English: README.txt)
+
+Tutto quello che c'è su questa chiavetta funziona SENZA internet. Non si installa
+niente sul computer e niente di quello che scrivi viene inviato da nessuna parte.
+Niente account, niente chiavi, niente costi.
+
+IN CASO DI EMERGENZA: CHIAMA IL 112. L'AI può sbagliare. Per salute e sicurezza
+fidati prima delle guide ufficiali nella cartella "guide" e della biblioteca offline.
+
+COSA C'È SULLA CHIAVETTA
+  guide/        Pieghevoli ufficiali della Protezione Civile (terremoto, alluvione,
+                maremoto...) e SCHEDA-EMERGENZA.txt, da compilare e stampare
+  library/      Wikipedia in italiano offline (solo testo) + enciclopedie mediche
+                (italiano e inglese). Si apre dalla pagina della chat.
+  models/       Modelli AI di ResQ (basati su modelli aperti: Qwen 2.5, DeepSeek-R1, Qwen 2.5 VL)
+  android/      File e app per telefoni Android (vedi android/LEGGIMI-ANDROID.txt)
+  MODELLI.txt   Quale modello scegliere, spiegato in modo semplice
+
+COME SI AVVIA (apre la chat e la biblioteca nel browser)
+  Windows : doppio clic su start-ai.bat
+            Se compare "PC protetto da Windows": Ulteriori informazioni > Esegui comunque.
+            Se il firewall chiede il permesso: Consenti. Parla solo con questo computer.
+  Mac     : la prima volta tasto destro su start-ai.command > Apri (poi basta il doppio clic).
+            Se è ancora bloccato: Impostazioni di Sistema > Privacy e sicurezza > Apri comunque.
+  Linux   : bash /percorso/di/RESQ/start-ai.sh
+
+  Il browser apre http://127.0.0.1:8090/ - scegli un modello in alto, scrivi, premi Invio.
+  I collegamenti alla biblioteca offline sono in alto nella pagina.
+  Per chiudere: torna alla finestra nera (o del Terminale) e premi Invio.
+
+  Non aprire chat.html con il doppio clic: funziona solo se la apre start-ai.
+
+ALTRI COMANDI (Windows: start-ai.bat ..., Mac: bash start-ai.command ...)
+  start-ai.sh terminal              chat nel terminale invece che nel browser
+  start-ai.sh run resq:3b           chat nel terminale con un modello preciso
+  start-ai.sh pull llama3.2:3b      scarica un altro modello sulla chiavetta (serve internet)
+  start-ai.sh list                  elenca i modelli sulla chiavetta
+  start-ai.sh rm MODELLO            cancella un modello dalla chiavetta
+
+MODELLI SULLA CHIAVETTA  (spiegazione semplice: vedi MODELLI.txt)
+  resq:1.5b         986 MB  il più veloce, risposte semplici
+  resq:3b           1.9 GB  il migliore per l'uso di tutti i giorni (predefinito)
+  resq-think:1.5b   1.1 GB  piccolo modello che "ragiona"
+  resq-think:7b     4.7 GB  ragionamento più forte, servono circa 8 GB di RAM
+  resq-vision:7b    6.0 GB  legge le immagini (pulsante Immagine); servono circa 10 GB di RAM
+
+NOTE
+  - Tutto ascolta solo su 127.0.0.1: gli altri dispositivi della rete non possono collegarsi.
+  - Le funzioni cloud sono disattivate: è tutto locale.
+  - La prima risposta è più lenta, perché il modello si carica dalla chiavetta.
+  - Con il computer a batteria usa i modelli piccoli: resq:3b o resq:1.5b.
+  - Prima di staccare la chiavetta, espellila in modo sicuro.

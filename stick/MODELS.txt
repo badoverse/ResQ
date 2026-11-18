@@ -1,0 +1,51 @@
+WHICH AI MODEL SHOULD I PICK?
+=============================
+
+All models run on this computer only. Nothing you type is sent to the internet.
+Bigger models give better answers, but they are slower and need more memory (RAM).
+If you are not sure, pick resq:3b.
+
+
+resq:1.5b - "The quick helper"
+  Size: 986 MB    Needs: 4 GB RAM or more
+  The smallest and fastest model. It works on almost any computer, even an old one.
+  Good for: short questions, quick definitions, simple rewording, short translations.
+  Not good for: long or tricky questions. It can make mistakes or invent facts.
+
+resq:3b - "The everyday helper"  (start here)
+  Size: 1.9 GB    Needs: 6 GB RAM or more
+  The best balance of speed and quality for normal use.
+  Good for: writing and fixing emails, summaries, explanations, brainstorming,
+  translating between common languages, simple coding help.
+  Not good for: hard math, or facts that must be exactly right.
+
+resq-think:1.5b - "The small thinker"
+  Size: 1.1 GB    Needs: 4 GB RAM or more
+  It thinks out loud before it answers. You see its reasoning first, then the answer.
+  Good for: simple puzzles and step-by-step problems on a low-power computer.
+  Not good for: chatting or writing. It is small, so its reasoning can go wrong.
+  Works best in English.
+
+resq-think:7b - "The careful thinker"
+  Size: 4.7 GB    Needs: 8 GB RAM or more
+  A stronger thinking model. It is slower, because it works the problem out before it answers.
+  Good for: math, logic problems, planning, checking an argument, harder code questions.
+  Not good for: quick chat. Simple questions get long answers.
+  Works best in English.
+
+resq-vision:7b - "The one that can see"
+  Size: 6.0 GB    Needs: 10 GB RAM or more
+  The only model here that can look at pictures.
+  Good for: reading text from a photo or screenshot, describing an image,
+  reading tables, timetables, receipts and forms.
+  How: in the browser chat, press the "Image" button, pick the photo, type your question, press Enter.
+  (In terminal mode: type your question, drag the image file into the window, press Enter.)
+  Not good for: slow or low-memory computers. It is the heaviest model here.
+
+
+GOOD TO KNOW
+  - The first answer takes longer, because the model has to load from the USB stick.
+  - These models can be wrong and can sound confident when they are wrong. Check important facts.
+  - They don't know about recent events, and they can't search the internet.
+  - Each chat starts fresh. They don't remember your earlier chats.
+  - If the computer becomes very slow or freezes, close the chat and pick a smaller model.

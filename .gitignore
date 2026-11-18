@@ -1,0 +1,10 @@
+# Large downloaded content never goes in the repo
+*.zim
+*.gguf
+*.apk
+*.pdf
+models/
+ollama/
+kiwix/
+library/
+.DS_Store

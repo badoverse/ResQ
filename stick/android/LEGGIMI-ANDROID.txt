@@ -1,0 +1,57 @@
+ResQ SU ANDROID - AI E BIBLIOTECA OFFLINE SUL TELEFONO
+======================================================
+(English below)
+
+In un blackout il telefono con un power bank dura molto più di un computer.
+Fai questa preparazione ADESSO, mentre c'è internet e corrente.
+
+COSA C'È IN QUESTA CARTELLA
+  PocketPal-1.24.0.apk      app per chattare con l'AI offline
+  kiwix-3.13.0.apk          app per leggere la biblioteca offline (Wikipedia, medicina)
+  resq-3b.gguf              AI consigliata (1.9 GB) - telefoni con almeno 6 GB di RAM
+  resq-1.5b.gguf            AI più leggera (1 GB) - per telefoni più vecchi
+  resq-think-1.5b.gguf      piccola AI che "ragiona" (1.1 GB)
+
+1. COLLEGA LA CHIAVETTA AL TELEFONO
+   Serve un adattatore USB-C (OTG), oppure copia i file con il computer
+   (collega il telefono al PC con il cavo e scegli "Trasferimento file").
+
+2. INSTALLA LE APP
+   Più semplice: installa "PocketPal AI" e "Kiwix" dal Play Store.
+   Senza internet: apri i file .apk da questa cartella con l'app File.
+   Android chiederà di consentire "Installa app sconosciute" per l'app File: consenti.
+
+3. COPIA I FILE SUL TELEFONO
+   Copia nella cartella Download del telefono:
+   - un modello AI: resq-3b.gguf (oppure resq-1.5b.gguf)
+   - dalla cartella library della chiavetta: wikipedia_it_medicine_maxi_2026-10.zim
+     (medicina in italiano, 270 MB). Wikipedia completa (10.7 GB) solo se hai spazio.
+
+4. AI: apri PocketPal > Models (Modelli) > pulsante + > "Add Local Model"
+   > scegli il file .gguf nella cartella Download > Load. Poi vai in Chat e scrivi.
+   Per dargli il nome ResQ: nelle impostazioni del modello, in "System prompt", scrivi:
+   "Sei ResQ, un assistente per le emergenze offline. Rispondi in modo chiaro e breve.
+   Per emergenze mediche o pericoli, di' sempre di chiamare il 112."
+
+5. BIBLIOTECA: apri Kiwix > Libreria / "Sul dispositivo" > pulsante per aprire un file
+   > scegli il file .zim nella cartella Download.
+
+Prova tutto UNA VOLTA in modalità aereo, così sai che funziona senza rete.
+L'AI può sbagliare: in emergenza chiama il 112 e segui le guide ufficiali.
+
+
+ENGLISH
+=======
+Do this setup NOW, while you still have internet and power.
+
+1. Connect the stick to the phone (USB-C OTG adapter), or copy the files with a computer.
+2. Install "PocketPal AI" and "Kiwix" from the Play Store, or open the .apk files here
+   with the Files app (allow "Install unknown apps" when Android asks).
+3. Copy to the phone's Download folder: resq-3b.gguf (or resq-1.5b.gguf for older
+   phones) and library/wikipedia_it_medicine_maxi_2026-10.zim (or the English
+   wikipedia_en_medicine_maxi_2026-10.zim, 1.9 GB).
+4. PocketPal > Models > + > Add Local Model > pick the .gguf > Load > Chat.
+   To name it ResQ: in the model settings, set the System prompt to
+   "You are ResQ, an offline emergency assistant. For emergencies, always say to call 112."
+5. Kiwix > Library / On device > open file > pick the .zim.
+Test once in airplane mode. The AI can be wrong: in an emergency call 112.

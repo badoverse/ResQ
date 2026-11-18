@@ -1,0 +1,51 @@
+QUALE MODELLO DI AI SCELGO?
+==========================
+
+Tutti i modelli funzionano solo su questo computer. Niente di quello che scrivi va su internet.
+I modelli più grandi rispondono meglio, ma sono più lenti e usano più memoria (RAM).
+Se non sei sicuro, scegli resq:3b.
+
+
+resq:1.5b - "L'aiutante veloce"
+  Dimensione: 986 MB    Serve: almeno 4 GB di RAM
+  Il più piccolo e veloce. Funziona su quasi tutti i computer, anche vecchi.
+  Va bene per: domande brevi, definizioni, riformulare frasi, traduzioni brevi.
+  Non va bene per: domande lunghe o difficili. Può sbagliare o inventare.
+
+resq:3b - "L'aiutante di tutti i giorni"  (comincia da qui)
+  Dimensione: 1.9 GB    Serve: almeno 6 GB di RAM
+  Il miglior equilibrio tra velocità e qualità.
+  Va bene per: scrivere e correggere messaggi, riassunti, spiegazioni, idee,
+  traduzioni tra le lingue più comuni, piccoli aiuti con il codice.
+  Non va bene per: matematica difficile o fatti che devono essere esatti.
+
+resq-think:1.5b - "Il piccolo ragionatore"
+  Dimensione: 1.1 GB    Serve: almeno 4 GB di RAM
+  Prima di rispondere "pensa ad alta voce": puoi aprire il suo ragionamento.
+  Va bene per: piccoli problemi passo dopo passo su computer poco potenti.
+  Non va bene per: chiacchierare o scrivere testi. È piccolo e può ragionare male.
+  Funziona meglio in inglese.
+
+resq-think:7b - "Il ragionatore attento"
+  Dimensione: 4.7 GB    Serve: almeno 8 GB di RAM
+  Più forte, ma più lento: prima ragiona, poi risponde.
+  Va bene per: calcoli, logica, organizzare un piano, controllare un ragionamento.
+  Non va bene per: risposte veloci. Anche a domande semplici risponde a lungo.
+  Funziona meglio in inglese.
+
+resq-vision:7b - "Quello che vede"
+  Dimensione: 6.0 GB    Serve: almeno 10 GB di RAM
+  L'unico che può guardare le immagini.
+  Va bene per: leggere il testo di una foto o di uno screenshot, descrivere un'immagine,
+  leggere tabelle, orari, scontrini e moduli.
+  Come: nella chat premi il pulsante "Immagine", scegli la foto, scrivi la domanda, premi Invio.
+  Non va bene per: computer lenti o con poca memoria. È il più pesante.
+
+
+DA SAPERE
+  - La prima risposta è più lenta, perché il modello si carica dalla chiavetta.
+  - Questi modelli possono sbagliare, anche con molta sicurezza. Controlla le cose importanti
+    nella biblioteca offline o nelle guide ufficiali.
+  - Non conoscono le notizie recenti e non possono cercare su internet.
+  - Ogni chat riparte da zero: non ricordano le chat precedenti.
+  - Se il computer diventa lentissimo o si blocca, chiudi e scegli un modello più piccolo.
